@@ -6,8 +6,15 @@ const {
   validateLength,
   validateUsername,
 } = require("../helpers/validaton");
-const bcript = require("bcrypt");
 
+const jwt = require("jsonwebtoken");
+
+const { sendVerificationEmail } = require("../helpers/mailer");
+
+const bcript = require("bcrypt");
+const { generateToken } = require("../helpers/token");
+
+//function for registering a user
 exports.register = async (req, res) => {
   try {
     const {
@@ -15,7 +22,6 @@ exports.register = async (req, res) => {
       last_name,
       email,
       password,
-      username,
       bYear,
       bMonth,
       bDay,
@@ -67,17 +73,48 @@ exports.register = async (req, res) => {
       last_name,
       email,
       password,
-      username,
+      username: newUsername,
       bYear,
       bMonth,
       bDay,
       gender,
     }).save();
-    res.json(user);
+
+    //generating token for registered user at that instances
+    //by providing the user id for eie3r dieoner efi
+    const emailVerifiacationToken = generateToken(
+      { id: user._id.toString() },
+      "30m"
+    );
+
+    //sending activation code to user email geting the url from env file
+    const url = `${process.env.BASE_URL}/activate/${emailVerifiacationToken}`;
+    //passing from database to user
+    sendVerificationEmail(user.email, user.first_name, url);
+    const token = generateToken({ id: user._id.toString() }, "7d");
+
+    res.send({
+      id: user.id,
+      username: user.username,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      token: token,
+      verified: user.verified,
+      message: "Register Success ! please activate your email to start",
+    });
+
+    // res.json(user);
   } catch (error) {
     console.error("Error while saving user", error);
     res
       .status(500)
       .json({ message: "An error occurred while saving the user." });
   }
+};
+
+//function to activate users when they register for the first time
+exports.activateAccount = (req, res) => {
+  const { token } = req.body;
+  const user = jwt.verify(token, process.env.TOKEN_SECRET);
+  console.log(user);
 };
