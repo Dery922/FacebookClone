@@ -11,7 +11,7 @@ const jwt = require("jsonwebtoken");
 
 const { sendVerificationEmail } = require("../helpers/mailer");
 
-const bcript = require("bcrypt");
+const bcrypt = require("bcrypt");
 const { generateToken } = require("../helpers/token");
 
 //function for registering a user
@@ -62,7 +62,7 @@ exports.register = async (req, res) => {
     }
 
     //encryting password
-    const bcriptPassword = await bcript.hash(password, 12);
+    const bcryptedPassword = await bcrypt.hash(password, 12);
 
     //generating username#
     let tempUsername = first_name + last_name;
@@ -72,7 +72,7 @@ exports.register = async (req, res) => {
       first_name,
       last_name,
       email,
-      password,
+      password: bcryptedPassword,
       username: newUsername,
       bYear,
       bMonth,
@@ -113,8 +113,59 @@ exports.register = async (req, res) => {
 };
 
 //function to activate users when they register for the first time
-exports.activateAccount = (req, res) => {
-  const { token } = req.body;
-  const user = jwt.verify(token, process.env.TOKEN_SECRET);
-  console.log(user);
+exports.activateAccount = async (req, res) => {
+  try {
+    const { token } = req.body;
+    const user = jwt.verify(token, process.env.TOKEN_SECRET);
+    //check
+    const check = await User.findOne(user.id);
+
+    if (check.verified === true) {
+      return res
+        .status(400)
+        .json({ message: "This email is already activated" });
+    } else {
+      await User.findByIdAndUpdate(user.id, { verified: true });
+      return res
+        .status(200)
+        .json({ message: "Account has been activated successfully" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+//login in function find user if on the system
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      //if user does not exist return message
+      return res.status(400).json({
+        message:
+          "the email address you entered is not connected to an account ",
+      });
+    }
+
+    const check = await bcrypt.compare(password, user.password);
+    if (!check) {
+      return res.status(400).json({
+        message: "Invaled Credentials please try again",
+      });
+    }
+
+    const token = generateToken({ id: user._id.toString() }, "7d");
+    res.send({
+      id: user.id,
+      username: user.username,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      token: token,
+      verified: user.verified,
+      message: "Register Success ! please activate your email to start",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
