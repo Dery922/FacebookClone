@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 export default function useClickOutside(ref, fun) {
   useEffect(() => {
-    const listener = () => {
+    const listener = (e) => {
       if (!ref.current || ref.current.contains(e.target)) {
         return;
       }
