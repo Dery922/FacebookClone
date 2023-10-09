@@ -1,7 +1,6 @@
-import React, { useState } from "react";
 import { Search, Return } from "../../svg";
 import useClickOutside from "../../helpers/clickOutside";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 export default function SearchMenu({ color, setShowSearchMenu }) {
   const [iconVisible, setIconVisible] = useState(true);
 
@@ -10,6 +9,9 @@ export default function SearchMenu({ color, setShowSearchMenu }) {
   useClickOutside(menu, () => {
     setShowSearchMenu(false);
   });
+  useEffect(() => {
+    input.current.focus();
+  }, []);
 
   return (
     <div className="header_left search_area scrollbar" ref={menu}>
@@ -42,6 +44,9 @@ export default function SearchMenu({ color, setShowSearchMenu }) {
             ref={input}
             onFocus={() => {
               setIconVisible(false);
+            }}
+            onBlur={() => {
+              setIconVisible(true);
             }}
           />
         </div>
