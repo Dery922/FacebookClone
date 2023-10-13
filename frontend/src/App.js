@@ -14,6 +14,7 @@ function App() {
           <Route path="/profile" element={<Profile />} exact />
           <Route path="/" element={<Home />} exact />
         </Route>
+
         {/* when user is loggein and try to access the login page redirect back */}
         <Route element={<NotLoggedInRoutes />}>
           <Route path="/login" element={<Login />} exact />
