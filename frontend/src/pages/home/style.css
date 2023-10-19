@@ -158,7 +158,7 @@
 .popup {
   position: relative;
   background: var(--bg-primary);
-  width: 30vw;
+  width: 40vw;
   height: 200px;
   position: fixed;
   left: 40%;

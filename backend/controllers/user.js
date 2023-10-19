@@ -115,10 +115,18 @@ exports.register = async (req, res) => {
 //function to activate users when they register for the first time
 exports.activateAccount = async (req, res) => {
   try {
+    //checking for security for authorization
+    const validUser = req.user.id;
     const { token } = req.body;
     const user = jwt.verify(token, process.env.TOKEN_SECRET);
     //check
-    const check = await User.findOne(user.id);
+    const check = await User.findById(user.id);
+
+    if (validUser !== user.id) {
+      return res.status(400).json({
+        message: "You don't have the authorization to perform this action",
+      });
+    }
 
     if (check.verified === true) {
       return res
@@ -172,4 +180,29 @@ exports.login = async (req, res) => {
 
 exports.auth = (req, res) => {
   res.json("welcome from auth");
+};
+
+exports.sendVerification = async (req, res) => {
+  try {
+    const id = req.user.id;
+    const user = await User.findById(id);
+    if (user.verified === true) {
+      return res.status(400).json({
+        message: "This account is already activated",
+      });
+    }
+
+    const emailVerifiacationToken = generateToken(
+      { id: user._id.toString() },
+      "30m"
+    );
+
+    //sending activation code to user email geting the url from env file
+    const url = `${process.env.BASE_URL}/activate/${emailVerifiacationToken}`;
+    //passing from database to user
+    sendVerificationEmail(user.email, user.first_name, url);
+    return res.status(200).json({
+      message: "Email verification has being send to your mail",
+    });
+  } catch (error) {}
 };

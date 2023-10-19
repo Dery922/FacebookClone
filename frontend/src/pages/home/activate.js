@@ -1,13 +1,14 @@
 import { useRef, useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CreatePost from "../../components/createPost";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Header from "../../components/header";
 import LeftHome from "../../components/home/left";
 import RightHome from "../../components/home/right";
 import Stories from "../../components/home/stories";
 import ActivateForm from "./ActivateForm";
 import axios from "axios";
+import Cookies from "js-cookie";
 import "./style.css";
 
 export default function Activate() {
@@ -16,6 +17,8 @@ export default function Activate() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const { token } = useParams();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     activateAccount();
@@ -34,6 +37,15 @@ export default function Activate() {
         }
       );
       setSuccess(data.message);
+      //setting the verification true in the cookie aswell
+      Cookies.set("user", JSON.stringify({ ...user, verified: true }));
+      dispatch({
+        type: "VERIFY",
+        payload: true,
+      });
+      setTimeout(() => {
+        navigate("/");
+      }, 3000);
     } catch (error) {
       setError(error.response.data.message);
     }
