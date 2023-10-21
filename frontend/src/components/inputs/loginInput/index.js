@@ -6,12 +6,21 @@ export default function LoginInput({ placeholder, bottom, ...props }) {
   const desktopView = useMediaQuery({
     query: "(min-width: 850px)",
   });
+
+  const view1050 = useMediaQuery({
+    query: "(max-width:850px)",
+  });
+
   return (
     <div className="input_wrap">
       {meta.touched && meta.error && !bottom && (
         <div
           className={
-            desktopView ? "input_error input_error_desktop" : "input_error"
+            desktopView && view1050 && field.name === "password"
+              ? "input_error input_error_desktop err_res_password"
+              : desktopView
+              ? "input_error input_error_desktop"
+              : "input_error"
           }
           style={{ transform: "translateY(3px)" }}
         >
@@ -34,7 +43,11 @@ export default function LoginInput({ placeholder, bottom, ...props }) {
       {meta.touched && meta.error && bottom && (
         <div
           className={
-            desktopView ? "input_error input_error_desktop" : "input_error"
+            desktopView && view1050 && field.name === "conf_password"
+              ? "input_error"
+              : desktopView
+              ? "input_error input_error_desktop"
+              : "input_error"
           }
           style={{ transform: "translateY(2px)" }}
         >
