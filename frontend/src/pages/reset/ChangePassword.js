@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import LoginInput from "../../components/inputs/loginInput/index";
 import * as Yup from "yup";
+import axios from "axios";
 
 export default function ChangePassword({
   password,
@@ -10,6 +11,10 @@ export default function ChangePassword({
   conf_password,
   setConf_Password,
   error,
+  loading,
+  setLoading,
+  userInfos,
+  setError,
 }) {
   const validatePassword = Yup.object({
     password: Yup.string()
@@ -24,6 +29,21 @@ export default function ChangePassword({
       .oneOf([Yup.ref("password")], "Passwords must match"),
   });
 
+  const { email } = userInfos;
+  const changePassword = async () => {
+    try {
+      setLoading(true);
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/changePassword`, {
+        email,
+        password,
+      });
+      setError("");
+      // navigate("/");
+    } catch (error) {
+      setLoading(false);
+      setError(error.response.data.message);
+    }
+  };
   return (
     <div className="reset_form" style={{ height: "320px" }}>
       <div className="reset_form_header">Change Password</div>
@@ -32,6 +52,9 @@ export default function ChangePassword({
         enableReinitialize
         initialValues={{ password, conf_password }}
         validationSchema={validatePassword}
+        onSubmit={() => {
+          changePassword();
+        }}
       >
         {(formik) => (
           <Form>
