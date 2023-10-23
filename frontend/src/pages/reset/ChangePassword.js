@@ -1,9 +1,11 @@
 import { Formik, Form } from "formik";
-import { useState } from "react";
+import { useState, useNavigate } from "react";
 import { Link } from "react-router-dom";
 import LoginInput from "../../components/inputs/loginInput/index";
 import * as Yup from "yup";
 import axios from "axios";
+
+const navigate = useNavigate();
 
 export default function ChangePassword({
   password,
@@ -38,7 +40,7 @@ export default function ChangePassword({
         password,
       });
       setError("");
-      // navigate("/");
+      navigate("/");
     } catch (error) {
       setLoading(false);
       setError(error.response.data.message);
