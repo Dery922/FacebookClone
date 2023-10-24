@@ -5,11 +5,17 @@ import Home from "./pages/home";
 import LoggedInRoutes from "./routes/LoggedInRoutes";
 import NotLoggedInRoutes from "./routes/NotLoggedInRoutes";
 import Activate from "./pages/home/activate";
+
 import Reset from "./pages/reset";
+import CreatePostPopup from "./components/createPostPopup";
+
+import { useSelector } from "react-redux";
 
 function App() {
+  const { user } = useSelector((state) => ({ ...state }));
   return (
     <div>
+      <CreatePostPopup user={user} />
       <Routes>
         {/* when user is not loggin and try to access the profile or home page redirect the user to the login */}
         <Route element={<LoggedInRoutes />}>

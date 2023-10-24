@@ -1,11 +1,9 @@
 import { Formik, Form } from "formik";
-import { useState, useNavigate } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import LoginInput from "../../components/inputs/loginInput/index";
 import * as Yup from "yup";
 import axios from "axios";
-
-const navigate = useNavigate();
 
 export default function ChangePassword({
   password,
@@ -46,6 +44,7 @@ export default function ChangePassword({
       setError(error.response.data.message);
     }
   };
+  const navigate = useNavigate();
   return (
     <div className="reset_form" style={{ height: "320px" }}>
       <div className="reset_form_header">Change Password</div>
