@@ -68,3 +68,13 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+API and other resources use in this project
+
+1. cloudinary.com use for uploading images for free
+
+Packages Used
+
+1. express-fileupload
+
+The tmp folder anyfiles we send to the backend must be register in there
