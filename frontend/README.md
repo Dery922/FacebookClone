@@ -77,4 +77,8 @@ Packages Used
 
 1. express-fileupload
 
+//others
 The tmp folder anyfiles we send to the backend must be register in there
+
+//problems could'nt tackle
+error not showing
